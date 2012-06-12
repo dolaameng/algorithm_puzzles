@@ -36,7 +36,10 @@
 
 ## STRATEGY FOR DEVELOPING A PARTIAL SOLUTION:
 ## To avoid redundancy, some times imposing a certain order on the partial solution could 
-## be helpful. See sequences_with_sum as an example
+## be helpful. See sequences_with_sum as an example.
+## Extension of a partial solution could be independent of the current partial solution
+## (e.g. extension with replacement) or the remaining resource could depend on the 
+## current partial solutions
 
 ###########################################################################################
 
@@ -112,6 +115,7 @@ def sequences_with_sum(seq, s):
         solution = frontier.pop()
         if solution in explored:
             ## should NOT happen, it is a TREE (only one path to a node)
+            ## no path back, so it is a tree
             raise RuntimeError('should not happen')
             continue
         explored.add(solution)
@@ -125,7 +129,35 @@ def sequences_with_sum(seq, s):
 ## of type XX (repeated occurance of any patterns in a row). 
 ## E.g., for n = 6, the sequence 210102 is prohibited because it contains 1010
 def sequences_without_xx(n):
-    pass
+    def is_complete(solution):
+        return len(solution) == n
+    def is_feasible(solution, added):
+        for i, v in enumerate(solution):
+            if v == added:
+                X1 = solution[i+1:] + (added,)
+                X2_start = max(i - len(X1) + 1, 0)
+                X2 = solution[X2_start:i+1]
+                if X1 == X2: return False
+        return True
+    def next(solution):
+        return [
+            solution + (added,)
+            for added in (0, 1, 2)
+            if is_feasible(solution, added)
+        ]
+    frontier, explored = [], set()
+    frontier.append(tuple())
+    solutions = []
+    while frontier:
+        solution = frontier.pop()
+        if solution in explored:
+            raise RuntimeError('should not happen')
+        explored.add(solution)
+        if is_complete(solution):
+            solutions.append(solution)
+        else:
+            frontier += next(solution)
+    return solutions
     
 ## tests
 if __name__ == '__main__':
@@ -139,5 +171,11 @@ if __name__ == '__main__':
     assert sequences_with_sum([1, 2, 4, 8, 16, 32], 22) == [[2, 4, 16]]
     assert sequences_with_sum([1 for _ in range(10)], 1) == [[1] for _ in range(10)]
     ## test sequences_without_xx
-    print sequences_without_xx(1)
+    assert sequences_without_xx(1) == [(2,), (1,), (0,)]
+    assert sequences_without_xx(3) == [
+        (2, 1, 2), (2, 1, 0), (2, 0, 2), 
+        (2, 0, 1), (1, 2, 1), (1, 2, 0), 
+        (1, 0, 2), (1, 0, 1), (0, 2, 1), 
+        (0, 2, 0), (0, 1, 2), (0, 1, 0)]
+    assert (2, 1, 0, 1, 0, 2) not in sequences_without_xx(6)
     print 'all tests pass'

@@ -54,8 +54,50 @@ def euler_path(graph):
     """Input: graph
     Output: a path of edges or None
     Implementation: Starting poit in Euler Cycle does matter for Euler path
+    Using Hierholzer's algorithm: (1) randomly start with an edge, find the closed
+    tour (cycle). (2) Find the next unvisited edge, repeat the previous step.
+    (3) Merge all the found tours, if not possible, report None
     """
-    pass
+    def find_tour(start, edges):
+        path = []
+        edge = start
+        while edge:
+            path.append(edge)
+            try:
+                edge = next(
+                    e for e in edges 
+                    if e not in path
+                    if e[0] == edge[1])
+            except:
+                edge = None
+        return path
+    def merge_path2(patha, pathb):
+        (p1, i1), (p2, i2) = next(
+            [(patha, ia), (pathb, ib)][::(1 if a2==b1 else -1)]
+            for (ia, (a1, a2)) in enumerate(patha)
+            for (ib, (b1, b2)) in enumerate(pathb)
+            if a2 == b1 or a1 == b2
+        )
+        return p1[i1+1:]+p1[:i1+1]+p2[i2:]+p2[:i2]
+    def merge_pathes(pathes):
+        if len(pathes) == 1: 
+            return pathes[0]
+        merged = pathes[0]
+        for path in pathes[1:]:
+            merged = merge_path2(merged, path)
+        return merged
+        
+    edges = [(va, vb) for (va, vbs) in graph.items() for vb in vbs]
+    unvisited = set(edges)
+    pathes = []
+    while unvisited:
+        start = unvisited.pop()
+        path = find_tour(start, unvisited)
+        unvisited = unvisited.difference(path)
+        pathes.append(path)
+    return merge_pathes(pathes)
+        
+    
 
 ## Tests    
 if __name__ == '__main__':
@@ -65,12 +107,14 @@ if __name__ == '__main__':
     
     ## test euler_cycle
     g1 = {'a': ('b', 'c'), 'b': ('a', 'c'), 'c': ('b', 'a')}
-    print euler_path(g1)
+    assert set(euler_path(g1)) == set([('b', 'c'), ('c', 'a'), 
+                        ('a', 'b'), ('b', 'a'), 
+                        ('a', 'c'), ('c', 'b')])
     ## g2 does not satisfy constraint 1, though there is a Euler PATH
     ## but there is no Euler CYCLE
-    g2 = {'a': ('b',), 'b': ('c', ), 'c': tuple()}
-    print euler_path(g2)
+    g2 = {'c': ('d', ), 'a': ('b',), 'b': ('c', ), 'd': tuple()}
+    assert set(euler_path(g2)) == set([('a', 'b'), ('b', 'c'), ('c', 'd')])
     g3 = {'a': ('b',), 'b': ('c', ), 'c': ('a', )}
-    print euler_path(g3)
+    assert set(euler_path(g3)) == set([('c', 'a'), ('a', 'b'), ('b', 'c')])
     
     print 'all tests pass'

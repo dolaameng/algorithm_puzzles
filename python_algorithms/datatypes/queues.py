@@ -97,7 +97,19 @@ def euler_path(graph):
         pathes.append(path)
     return merge_pathes(pathes)
         
-    
+## Binary Substring Problem
+## Given integer n, find a binary bit string x of length 2**n with
+## the following property: any binary string of length n is a substring
+## of the string xxx...
+## The complexity of the algorithm should be O(C**n)
+## INSPIRATION: Consider a graph whose vertices are binary strings of length n-1.
+## An edge leaving x and entering y exists if and only if there is a string z of 
+## length n such that x is a prefix of z and y is a suffix of z, in other words,
+## x and y have n-2 bits in common (x[1:] == y[:-1]). This graph is CONNECTED, 
+## and each vertex has two incomming and two outgoing edges (first/last bit is 0/1).
+## A cycle that traverses all edges provides a string satisfying the desired property,
+## since there are 2**(n-1) vertices and there are 2**(n-1) x 2 = 2**n edges
+## (count outgoing edges only to avoid redundancy). 
 
 ## Tests    
 if __name__ == '__main__':

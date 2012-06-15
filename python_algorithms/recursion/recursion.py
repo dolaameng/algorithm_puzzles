@@ -52,8 +52,20 @@ def hanoi(n, source, middle, target):
                 + ['%s->%s' % (source, target)]
                 + hanoi(n-1, middle, source, target))
 
+## it seems that it is the memory that brings the method down
 STM_Table = string.maketrans('SMT', 'STM')
-MST_Table = string.maketrans('SMT', 'MST')                
+MST_Table = string.maketrans('SMT', 'MST') 
+def memo_hanoi(n, source, middle, target):
+    cache = [None, ['%(S)s->%(T)s']]
+    for i in range(2, n+1):
+        cache.append( map(lambda s: s.translate(STM_Table), cache[i-1])
+                    + ['%(S)s->%(T)s']
+                    + map(lambda s: s.translate(MST_Table), cache[i-1]) ) 
+    return [
+        s % {'S': source, 'M': middle, 'T': target}
+        for s in cache[n]
+    ] 
+"""          
 def memo_hanoi(n, source, middle, target):
     if n not in memo_hanoi.cache:
         if n == 1:
@@ -71,6 +83,7 @@ def memo_hanoi(n, source, middle, target):
         for s in template
     ]
 memo_hanoi.cache = {}
+"""
 
 ## Tests
 if __name__ == '__main__':
@@ -86,14 +99,14 @@ if __name__ == '__main__':
     
     ## test power
     assert power(2.0, 10) == 1024 
-    
     ## test hanoi tower
     assert hanoi(2, 'A', 'B', 'C') == ['A->B', 'A->C', 'B->C']
     assert memo_hanoi(2, 'A', 'B', 'C') == ['A->B', 'A->C', 'B->C']
     assert hanoi(3, 'A', 'B', 'C') == ['A->C', 'A->B', 'C->B', 'A->C', 'B->A', 'B->C', 'A->C']
     assert memo_hanoi(3, 'A', 'B', 'C') == ['A->C', 'A->B', 'C->B', 'A->C', 'B->A', 'B->C', 'A->C']
-    # profiling normal hanoi and memoized version
-    n = 25
+    ## profiling normal hanoi and memoized version
+    ## naive optimization doesnt actually help
+    n = 22
     dt, r1 = timedcall(hanoi, n, 'A', 'B', 'C')
     print 'normal hanoi n = %d, time = %fs' % (n, dt) ## 56.778993s
     dt, r2 = timedcall(memo_hanoi, n, 'A', 'B', 'C')

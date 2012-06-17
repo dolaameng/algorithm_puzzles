@@ -3,10 +3,7 @@
 ## for details. This package includes some exercises of re-solving
 ## some combinatorial problems using recursion algorithms.
 import itertools
-<<<<<<< HEAD
 
-=======
->>>>>>> 54659ec738142c007df229edf0e6d55066133c65
 ## Sequences with Replacement
 ## Write a program that prints all sequences of length n composed
 ## of the numbers 1..k, i.e., k**n sequences in total
@@ -19,7 +16,7 @@ def sequences(nums, n):
         return [(i, ) + s
         for i in nums
         for s in sequences(nums, n-1)]
-<<<<<<< HEAD
+
         
 ## Permutations
 ## write a program that prints all permutations of 1..k of length n
@@ -60,8 +57,7 @@ def ones_zeros(n1, n0):
 ## e.g., n = 4, 31, 22, 211, 13, 121, 112
 def partition(n):
     pass
-=======
->>>>>>> 54659ec738142c007df229edf0e6d55066133c65
+
 
 ## Tests
 if __name__ == '__main__':
@@ -71,7 +67,7 @@ if __name__ == '__main__':
         (1, 1), (1, 2), (1, 3), 
         (2, 1), (2, 2), (2, 3), 
         (3, 1), (3, 2), (3, 3)]
-<<<<<<< HEAD
+
     ## test permutations
     assert all_permutations((1, 2, 3), 2) == [(1, 2), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2)]
     assert all_permutations((1, 2, 3), 3) == [
@@ -87,7 +83,6 @@ if __name__ == '__main__':
     ## test partition
     print partition(3)
     print partition(4)
-=======
->>>>>>> 54659ec738142c007df229edf0e6d55066133c65
+
     
     print 'all tests pass'

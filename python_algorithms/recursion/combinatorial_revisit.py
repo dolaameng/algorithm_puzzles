@@ -136,9 +136,52 @@ def quick_sort(seq):
 ## we know finding min or max needs O(n) time
 ## SOLUTION: Median of Medians algorithm with magic number 5
 def kth_element(seq, k):
-    ## 1. separate array into n/5 groups, each containing 5 elements
-    ## TODO
-    pass
+    ## Use recursion, but this algorithm doesnt run in O(n) time
+    ## since its pivot choice is random, instead of optimally
+    pivot = seq[0]
+    if len(seq) == 1:
+        return pivot
+    left, right = [], []
+    for n in seq[1::]:
+        if n <= pivot: left.append(n)
+        else: right.append(n)
+    if len(left) == k:
+        return pivot
+    elif len(left) > k:
+        return kth_element(left, k)
+    else:
+        return kth_element(right, k-len(left)-1) 
+
+## linear kth element algorithm based on median_of_median
+## the recursive call does not exceed worst-case linear
+## behavior because the list of medians is 20% of the size
+## of the list, while the other recursive call recurse on at
+## most 70% of the list, making the running time
+## T(n) <= T(n/5) + T(7n/10) + O(n)
+def linear_kth_element(seq, k):
+    if len(seq) == 1:
+        return seq[0]
+    ## 1. separate array into n/5 groups, each containing 5 SORTED elements
+    MAGIC = 5
+    group5 = [sorted(seq[i:i+MAGIC]) for i in range(0, len(seq), MAGIC)]
+    ## 2.1 find the median (thrid) element of each subseq in group
+    medians = map(lambda s: s[(len(s)+1)/2-1], group5)
+    ## 2.2 find the median of medians by recursive call
+    median_median = kth_element(medians, (len(medians))/2-1)
+    ## 3. partition original seq based on median_median, find the kth
+    ## element's position in either Left or Right part
+    left, right = [], []
+    for n in set(seq).difference([median_median]):
+        if n <= median_median: left.append(n)
+        else: right.append(n)
+    ## 4. Apply the algorithm recursively ot left/right part
+    if len(left) == k:
+        return median_median
+    elif len(left) > k:
+        return kth_element(left, k)
+    else:
+        return kth_element(right, k-len(left)-1)
+
     
 ## Tests
 if __name__ == '__main__':
@@ -199,9 +242,13 @@ if __name__ == '__main__':
     assert quick_sort(nums) == range(1, 11)
     assert quick_sort([3, 1, 1, 3, 2, 2, 2, 1, 3]) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
     
-    ## test k_percentile
-    print kth_element(nums, 1)
-    print kth_element(nums, 5)
-    print kth_element([3, 1, 1, 3, 2, 2, 2, 1, 3], 6)
+    ## test kth_element
+    assert kth_element(nums, 1) == range(1, 11)[1]
+    assert kth_element(nums, 5) == range(1, 11)[5]
+    assert kth_element([3, 1, 1, 3, 2, 2, 2, 1, 3], 6) == sorted([3, 1, 1, 3, 2, 2, 2, 1, 3])[6]
+    ## test linear_kth_element
+    assert linear_kth_element(nums, 1) == range(1, 11)[1]
+    assert linear_kth_element(nums, 5) == range(1, 11)[5]
+    assert linear_kth_element([3, 1, 1, 3, 2, 2, 2, 1, 3], 6) == sorted([3, 1, 1, 3, 2, 2, 2, 1, 3])[6]
     
     print 'all tests pass'

@@ -138,6 +138,7 @@ def quick_sort(seq):
 def kth_element(seq, k):
     ## 1. separate array into n/5 groups, each containing 5 elements
     ## TODO
+    pass
     
 ## Tests
 if __name__ == '__main__':

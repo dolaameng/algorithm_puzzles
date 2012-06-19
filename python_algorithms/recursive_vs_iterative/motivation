@@ -1,0 +1,9 @@
+Recursion is functionally equivalent to loops. But recursion could result in very
+intuitive and simple solutions. However, there is also a point of translating some
+recursion implementations into iterative ones based on loops. The main motivations
+are: (1) avoid recursion depth limit in some languages (2) make the implementation
+more flexible and fast (3) elimination of recursion could be very instructive to
+programmers. 
+
+Apart from elimination of recursions, there are also some other techniques that can
+generally make recursion run faster, such as memoization, tail recursion, and etc.

@@ -260,12 +260,61 @@ def expression(nums, op, target):
                 values[(start, end)] = map(lambda r: r[0], result)
                 pathes[(start, end)] = dict(result)
     def find_expression(start, end):
-        ## TODO
+        ## TODO -- still not finished, erh.
         pass
-    print; print values; print
-    print pathes
+    #print; print values; print
+    #print pathes
     exp = find_expression(0, N-1) if target in values[(start, end)] else None
     return exp
+
+#########################Sum of Subsets Problem#################
+## A list of n different numbers and an integer N are given. Check 
+## if N is equal to the sum of some subsets {x1, ..., xn}. The 
+## complexity should be of order Nn. The complexity would be
+## much higher though if the task is to find all the subsets
+## that gives sum N
+
+## 1. Backtracking version
+## The complexity is essentially n! though a lot of them
+## will be pruned by backtracking
+## The complexity of finding ONE solution will be n
+def bk_subset_sum(nums, S):
+    is_complete = lambda s: sum(s) == S
+    def next(s):
+        return frozenset(filter(
+        lambda ns: sum(ns) <= S,
+        [
+            s | frozenset([n])
+            for n in set(nums).difference(s)
+        ]))
+    explored, frontier = set(), []
+    frontier = [frozenset([n]) for n in nums]
+    while frontier:
+        solution = frontier.pop()
+        if solution in explored:
+            continue
+        explored.add(solution)
+        if is_complete(solution):
+            yield solution
+        frontier += next(solution)
+        
+## 2. Dynamic Programming version (complexity is related to N)
+## is a hint. This program only checks one solution for the sum
+def dp_subset_sum(nums, S):
+    cache = dict([
+        (n, frozenset([n]))
+        for n in nums
+    ])
+    N = len(nums)
+    for sz in range(2, N+1):
+        if S in cache: break
+        cache.update(dict([
+            (k+n, v|frozenset([n]))
+            for k, v in cache.items()
+            for n in nums
+            if n not in v
+        ]))
+    return cache[S] if S in cache else None
 
 ## tests
 if __name__ == '__main__':
@@ -362,5 +411,24 @@ if __name__ == '__main__':
     
     ## test binary operation problem
     print expression([1, 2, 3, 4], lambda x, y: x-y, -1)
+    
+    ## test backtracking subset_sum problem
+    assert list(bk_subset_sum([1, 2, 3, 4, 5, 9], 18)) == [
+        frozenset([9, 3, 5, 1]), 
+        frozenset([9, 2, 3, 4]), 
+        frozenset([9, 4, 5])]
+    assert list(bk_subset_sum([1, 2, 4, 8, 16], 21)) == [frozenset([16, 1, 4])]
+    ## this test the complexity of finding all subsets
+    #timedcall(lambda: list(bk_subset_sum(range(1, 1000), 500)))
+    ## this test the complexity of finding one subset
+    bktime, bkresult = timedcall(lambda: next(bk_subset_sum(range(1, 1000, 2), 1023))) 
+    assert bktime < 0.003
+    assert bkresult == frozenset([9, 3, 999, 5, 7])
+    ## test dynamic programming subset_sum problem
+    assert dp_subset_sum([1, 2, 3, 4, 5, 9], 18) == frozenset([9, 4, 5])
+    assert dp_subset_sum([1, 2, 4, 8, 16], 21) == frozenset([16, 1, 4])
+    dptime, dpresult = timedcall(dp_subset_sum, range(1, 1000, 2), 1023)
+    assert dptime < 2.5
+    assert dpresult == frozenset([1, 999, 23])
     
     print 'all tests pass'

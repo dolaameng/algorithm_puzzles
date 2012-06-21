@@ -7,3 +7,6 @@ programmers.
 
 Apart from elimination of recursions, there are also some other techniques that can
 generally make recursion run faster, such as memoization, tail recursion, and etc.
+
+Another alternative for recursion is BACKTRACKING -- including using either a queue or a stack
+see backtracking package in details

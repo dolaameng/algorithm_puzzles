@@ -131,6 +131,8 @@ def floyd_warshall_algorithm_dp(graph):
         for v in graph
     ])
     ## THE ORDER OF THE LOOP IS BEAUTIFUL!
+    ## the loop for k is not for every single k
+    ## is for interval from 1, 1..2, ..., 1..k
     for k in graph: # use intermediate vertices up to k
         for i in graph: # update shortest distance pair i -> j
             for j in graph:
@@ -169,7 +171,32 @@ def floyd_warshall_algorithm_memo(graph):
     ])
     return shortest_distances
                 
-
+#################Applicaitons of Shortest Path
+##### Baggage Allowance Problem
+## There are n airports. For every i and j we know the 
+## baggage allowance on the flights from ith to jth.
+## For a given starting point a and for all other airports
+## x find the maximal weight that can be transported from 
+## a to x (using as many intermediate stops as necessary).
+## The algorithm should run in time O(n**2)
+## AHA: use the max instead of sum in Dijkstra algorithm (single source)
+def baggage_allowance(graph, start):
+    unvisited = set(graph.keys())
+    allowances = dict([
+        (u, 0 if u is start else -INF)
+        for u in graph
+    ])
+    came_from = {start: []}
+    while unvisited:
+        current = max(unvisited, key = lambda v: allowances[v])
+        if allowances[current] == -INF:
+            break
+        for v in graph[current]:
+            if allowances[v] < max(graph[current][v], allowances[current]):
+                allowances[v] = max(graph[current][v], allowances[current])
+                came_from[v] = came_from[current] + [v]
+        unvisited.remove(current)
+    return allowances, came_from
     
 ## tests
 if __name__ == '__main__':
@@ -227,5 +254,20 @@ if __name__ == '__main__':
         ('D', 'C'): 6, ('D', 'F'): 6, ('A', 'C'): 2, 
         ('F', 'E'): INF, ('C', 'A'): 3, ('E', 'B'): 4, 
         ('C', 'B'): 1, ('B', 'E'): 1, ('C', 'E'): 2}
+        
+    ## test baggage allowance problem
+    travel = {
+        'A': {'B': 2, 'C': 2, 'D': 5},
+        'B': dict(),
+        'C': {'E': 3},
+        'D': {'E': 3}, 
+        'E': dict(),
+        'F': dict()
+    }
+    allowances, routes = baggage_allowance(travel, 'A')
+    assert allowances == {'A': 0, 'C': 2, 'B': 2, 'E': 5, 'D': 5, 'F': -INF}
+    assert routes == {
+        'A': [], 'C': ['C'], 
+        'B': ['B'], 'E': ['D', 'E'], 'D': ['D']}
     
     print 'all tests pass'

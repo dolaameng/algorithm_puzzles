@@ -22,9 +22,12 @@ N = 600851475143
 ## based on the prime factor tree
 ## LOOP INVARIANCE: 
 ## n has no factors in between 2 to i
-## n is always >= i (for i * i <= n)
+## n is always >= i (for i * i <= n), so it is bigger than all other prime factors
 ## n is a factor of N
 ## => there is prime factor larger than n
+################## Why the algorithm is correct ##############
+## Because of the loop invariance
+##############################################################
 def largest_prime_factor(N):
     i, n = 2, N
     while i * i <= n:

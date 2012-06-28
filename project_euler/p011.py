@@ -55,7 +55,23 @@ GRID = map(lambda row: [0]*3 + [int(n) for n in row.split()] + [0]*3,
 def solution1():
     N = 26
     grid = [[0] * 26] * 3 + GRID +  [[0] * 26] * 3
-    LOW, HIGH = 3, 24
+    LO, HI = 3, 23
+    
+    def centered(r, c):
+        STEP = 4
+        still = [0 for _ in range(STEP)]
+        forward = range(STEP)
+        backward = range(0, -STEP, -1)
+        up = zip(still, backward) # r still, c back
+        down = zip(still, forward) # r still, c forward
+        ## TODO
+    
+    return max(
+        max(centered(row, col))
+        for row in range(LO, HI)
+        for col in range(LO, HI)
+    )
+    
 
 ## tests
 if __name__ == '__main__':

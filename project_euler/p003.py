@@ -31,9 +31,9 @@ N = 600851475143
 def largest_prime_factor(N):
     i, n = 2, N
     while i * i <= n:
-        while n % i == 0:
+        while n % i == 0 and n > i:
             n = n / i
-            largest_prime_factor.count += 1
+            #largest_prime_factor.count += 1
         i += 1
     return n
     
@@ -47,6 +47,9 @@ def largest_prime_factor(N):
 if __name__ == '__main__':
     ## test the largest prime number
     largest_prime_factor.count = 0
-    assert largest_prime_factor(N) == 6857
-    print largest_prime_factor.count
+    #assert largest_prime_factor(N) == 6857
+    #print largest_prime_factor.count
+    from simple_profile import timed_call
+    #N = 688543
+    print timed_call(largest_prime_factor, N)
     

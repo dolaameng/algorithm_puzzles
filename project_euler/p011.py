@@ -57,17 +57,30 @@ def solution1():
     grid = [[0] * 26] * 3 + GRID +  [[0] * 26] * 3
     LO, HI = 3, 23
     
+    def product(iterable):
+        return reduce(lambda x, y: x*y, iterable, 1)
+    
     def centered(r, c):
         STEP = 4
         still = [0 for _ in range(STEP)]
         forward = range(STEP)
         backward = range(0, -STEP, -1)
-        up = zip(still, backward) # r still, c back
-        down = zip(still, forward) # r still, c forward
-        ## TODO
+        # up and down
+        up = zip(backward, still) # r back, c still
+        # left and right
+        right = zip(still, forward) # r still, c head
+        # right up and left down
+        right_up = zip(backward, forward) # r back, c head
+        # left up and right down
+        left_up = zip(backward, backward) # r back, c back
+        return [
+            (product([grid[dr+r][dc+c] for (dr, dc) in direction]), dname)
+            for (dname,direction) in zip(('up', 'right', 'right_up', 'left_up'),
+                                (up, right, right_up, left_up))
+        ]
     
     return max(
-        max(centered(row, col))
+        (max(centered(row, col)), (row-LO, col-LO))
         for row in range(LO, HI)
         for col in range(LO, HI)
     )
@@ -75,5 +88,5 @@ def solution1():
 
 ## tests
 if __name__ == '__main__':
-    solution1()
+    assert solution1() == ((70600674, 'right_up'), (15, 3))
     print 'all tests pass'

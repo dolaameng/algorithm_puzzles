@@ -1,0 +1,1 @@
+print r"http://www.pythonchallenge.com/pc/def/%d.html" % (2**38,)
